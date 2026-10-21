@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Restore exact v7 standalone asset
         run: |
-          cat v7payload/part01.txt v7payload/q21.txt v7payload/q22.txt v7payload/q23.txt v7payload/p2b.txt v7payload/part03.txt v7payload/part04.txt v7payload/part05.txt | base64 -d > /tmp/v7.html.bz2
+          cat v7payload/part01.txt v7payload/q21.txt v7payload/q21tail.txt v7payload/q22.txt v7payload/q23.txt v7payload/p2b.txt v7payload/part03.txt v7payload/part04.txt v7payload/part05.txt | base64 -d > /tmp/v7.html.bz2
           bzip2 -tv /tmp/v7.html.bz2
           bunzip2 -c /tmp/v7.html.bz2 > app/src/main/assets/index.html
           test "$(wc -c < app/src/main/assets/index.html)" -eq 472466
