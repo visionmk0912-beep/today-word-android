@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, v7-build-2 ]
   workflow_dispatch:
 
 jobs:
@@ -28,12 +28,19 @@ jobs:
       - name: Build debug APK
         run: gradle assembleDebug --stacktrace
 
+      - name: Verify APK signature and contents
+        run: |
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
+          "$APKSIGNER" verify --verbose --print-certs app/build/outputs/apk/debug/app-debug.apk
+          unzip -l app/build/outputs/apk/debug/app-debug.apk | grep 'assets/index.html'
+          sha256sum app/build/outputs/apk/debug/app-debug.apk
+
       - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk today-word.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk today-word-v7.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: today-word-apk
-          path: today-word.apk
+          name: today-word-v7-apk
+          path: today-word-v7.apk
           retention-days: 30
