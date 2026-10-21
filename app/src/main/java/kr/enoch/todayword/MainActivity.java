@@ -1,6 +1,8 @@
 package kr.enoch.todayword;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -10,7 +12,7 @@ import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
     private WebView webView;
-    private static final String APP_URL = "https://today-word.lovable.app";
+    private static final String APP_URL = "file:///android_asset/index.html";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,28 +24,24 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setAllowFileAccess(false);
+        settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
-        settings.setUserAgentString(settings.getUserAgentString() + " TodayWordAndroid/1.0");
+        settings.setUserAgentString(settings.getUserAgentString() + " TodayWordAndroid/7.0");
 
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                String host = request.getUrl().getHost();
-                if (host != null && (host.equals("today-word.lovable.app") || host.endsWith("lovable.app"))) {
-                    return false;
-                }
-                return false;
+                Uri uri = request.getUrl();
+                if ("file".equals(uri.getScheme())) return false;
+                startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                return true;
             }
         });
 
-        if (savedInstanceState == null) {
-            webView.loadUrl(APP_URL);
-        } else {
-            webView.restoreState(savedInstanceState);
-        }
+        if (savedInstanceState == null) webView.loadUrl(APP_URL);
+        else webView.restoreState(savedInstanceState);
     }
 
     @Override
